@@ -33,7 +33,7 @@ const scrape = async () => {
   await cluster.task(async ({ page, data: url }) => {
     await page.goto(url, {
       waitUntil: "networkidle2",
-      timeout: 0,
+      timeout: 60000,
     });
 
     if (url === urls[0]) {
