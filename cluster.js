@@ -153,41 +153,106 @@ const scrape = async () => {
     await cluster.execute(urls[1]);
     const result1 = await cluster.execute(urls[2]);
     console.log(result1);
-    console.log(Calculation(result1));
+    // console.log(Calculation(result1));
+    console.log("succesfully finished");
   } catch (err) {
     console.log(`Error crawling :${err.message}`);
   }
-  console.log("succesfully finished");
 
   await cluster.idle();
   await cluster.close();
 };
 
-const Calculation = (res) => {
-  const def1 = 1 - parseFloat(res[0].price) / parseFloat(res[3].price);
+const JsonData = [
+  {
+    exchange: "idax",
+    title: "ask_price",
+    price: "0.628680",
+    amount: "2,207,676.8388",
+    total: "1,387,922.27502",
+    patched: "Not patched.",
+  },
+  {
+    exchange: "idax",
+    title: "bid_price",
+    price: "0.561002",
+    amount: "334,257.1990",
+    total: "187,518.95715",
+    patched: "Not patched.",
+  },
+  {
+    exchange: "complex",
+    title: "ask_price",
+    price: "0.87000",
+    amount: "1,763,026.51",
+    total: "1,533,833.06",
+    patched: "Not patched.",
+  },
+  {
+    exchange: "complex",
+    title: "bid_price",
+    price: "0.82013",
+    amount: "1,049,640.42",
+    total: "860,841.60",
+    patched: "Not patched.",
+  },
+  {
+    exchange: "trade",
+    title: "ask_price",
+    price: "0.560",
+    amount: "10,000.000",
+    total: "5,600.000",
+    patched: "Not patched.",
+  },
+  {
+    exchange: "trade",
+    title: "bid_price",
+    price: "0.555",
+    amount: "1,101,223.411",
+    total: "611,178.993",
+    patched: "Not patched.",
+  },
+];
+
+const Calculation = (response) => {
+  let res = [];
+  response.forEach((el) => {
+    res.push({
+      exchange: el.exchange,
+      title: el.title,
+      price: parseFloat(el.price),
+      amount: parseFloat(el.amount.replace(/[^\d\.\-]/g, "")),
+      total: parseFloat(el.total.replace(/[^\d\.\-]/g, "")),
+      patched: el.patched,
+    });
+  });
+
+  const def1 = 1 - res[0].price / res[3].price;
   let preProfit1 = 0;
   let preProfit2 = 0;
-  if (parseFloat(res[0].amount) >= parseFloat(res[3].amount)) {
-    preProfit1 = parseFloat(res[3].amount) * def1;
+
+  if (res[0].amount >= res[3].amount) {
+    preProfit1 = res[3].amount * def1;
   } else {
-    preProfit1 = parseFloat(res[0].amount) * def1;
+    preProfit1 = res[0].amount * def1;
   }
-  const def2 = 1 - parseFloat(res[4].price) / parseFloat(res[3].price);
-  if (parseFloat(res[4].amount) >= parseFloat(res[3].amount)) {
-    preProfit2 = parseFloat(res[3].amount) * def1;
+  const def2 = 1 - res[4].price / res[3].price;
+  if (res[4].amount >= res[3].amount) {
+    preProfit2 = res[3].amount * def2;
   } else {
-    preProfit2 = parseFloat(res[4].amount) * def1;
+    preProfit2 = res[4].amount * def2;
   }
   const calc = {
     compareSituation1: "idax AskPrice and Comlpex BidPrice",
     difference1: (def1 * 100).toFixed(2) + "%",
-    profit1: preProfit1.toFixed(2),
+    amount1: (preProfit1 / def1).toFixed(2) + "MNT",
+    profit1: preProfit1.toFixed(2) + "MNT",
     compareSituation2: "trade AskPrice and Comlpex BidPrice",
     difference2: (def2 * 100).toFixed(2) + "%",
-    profit2: preProfit2.toFixed(2),
+    amount2: (preProfit2 / def2).toFixed(2) + "MNT",
+    profit2: preProfit2.toFixed(2) + "MNT",
   };
-
   return calc;
 };
-
-scrape();
+Calculation(JsonData);
+//scrape();
