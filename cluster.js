@@ -165,6 +165,7 @@ const scrape = async () => {
 
 const Calculation = (response) => {
   let res = [];
+  let calc = {};
   response.forEach((el) => {
     res.push({
       exchange: el.exchange,
@@ -176,31 +177,21 @@ const Calculation = (response) => {
     });
   });
 
-  const def1 = 1 - res[0].price / res[3].price;
-  let preProfit1 = 0;
-  let preProfit2 = 0;
+  res.forEach((element) => {
+    if (element.title === "bid_price" && element.exchange !== "idax") {
+      calc["idax_" + element.exchange] =
+        ((1 - res[0].price / element.price) * 100).toFixed(2) + "%";
+    }
+    if (element.title === "bid_price" && element.exchange !== "complex") {
+      calc["complex_" + element.exchange] =
+        ((1 - res[2].price / element.price) * 100).toFixed(2) + "%";
+    }
+    if (element.title === "bid_price" && element.exchange !== "trade") {
+      calc["trade_" + element.exchange] =
+        ((1 - res[4].price / element.price) * 100).toFixed(2) + "%";
+    }
+  });
 
-  if (res[0].amount >= res[3].amount) {
-    preProfit1 = res[3].amount * def1;
-  } else {
-    preProfit1 = res[0].amount * def1;
-  }
-  const def2 = 1 - res[4].price / res[3].price;
-  if (res[4].amount >= res[3].amount) {
-    preProfit2 = res[3].amount * def2;
-  } else {
-    preProfit2 = res[4].amount * def2;
-  }
-  const calc = {
-    compareSituation1: "idax AskPrice and Comlpex BidPrice",
-    difference1: (def1 * 100).toFixed(2) + "%",
-    amount1: (preProfit1 / def1).toFixed(2) + "MNT",
-    profit1: preProfit1.toFixed(2) + "MNT",
-    compareSituation2: "trade AskPrice and Comlpex BidPrice",
-    difference2: (def2 * 100).toFixed(2) + "%",
-    amount2: (preProfit2 / def2).toFixed(2) + "MNT",
-    profit2: preProfit2.toFixed(2) + "MNT",
-  };
   return calc;
 };
 
