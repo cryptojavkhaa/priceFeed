@@ -153,7 +153,7 @@ const scrape = async () => {
     await cluster.execute(urls[1]);
     const result1 = await cluster.execute(urls[2]);
     console.log(result1);
-    // console.log(Calculation(result1));
+    console.log(Calculation(result1));
     console.log("succesfully finished");
   } catch (err) {
     console.log(`Error crawling :${err.message}`);
@@ -162,57 +162,6 @@ const scrape = async () => {
   await cluster.idle();
   await cluster.close();
 };
-
-const JsonData = [
-  {
-    exchange: "idax",
-    title: "ask_price",
-    price: "0.628680",
-    amount: "2,207,676.8388",
-    total: "1,387,922.27502",
-    patched: "Not patched.",
-  },
-  {
-    exchange: "idax",
-    title: "bid_price",
-    price: "0.561002",
-    amount: "334,257.1990",
-    total: "187,518.95715",
-    patched: "Not patched.",
-  },
-  {
-    exchange: "complex",
-    title: "ask_price",
-    price: "0.87000",
-    amount: "1,763,026.51",
-    total: "1,533,833.06",
-    patched: "Not patched.",
-  },
-  {
-    exchange: "complex",
-    title: "bid_price",
-    price: "0.82013",
-    amount: "1,049,640.42",
-    total: "860,841.60",
-    patched: "Not patched.",
-  },
-  {
-    exchange: "trade",
-    title: "ask_price",
-    price: "0.560",
-    amount: "10,000.000",
-    total: "5,600.000",
-    patched: "Not patched.",
-  },
-  {
-    exchange: "trade",
-    title: "bid_price",
-    price: "0.555",
-    amount: "1,101,223.411",
-    total: "611,178.993",
-    patched: "Not patched.",
-  },
-];
 
 const Calculation = (response) => {
   let res = [];
@@ -254,5 +203,5 @@ const Calculation = (response) => {
   };
   return calc;
 };
-Calculation(JsonData);
-//scrape();
+
+scrape();
