@@ -15,4 +15,7 @@ async function startBrowser() {
   } catch (err) {
     console.log("error launching browser => ", err);
   }
+  return browser;
 }
+
+module.exports = { startBrowser };
