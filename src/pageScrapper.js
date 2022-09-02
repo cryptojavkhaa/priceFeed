@@ -24,19 +24,19 @@ const scrapperObjects = {
       return links;
     });
     let date = new Date();
-    let updown = urls[1].perubahan.includes("-")
-      ? `penurunan sebesar ${urls[1].perubahan}`
-      : `kenaikan sebesar ${urls[1].perubahan}`;
-    let message = `Harga emas pada hari ini ${date.getDate()}-${
+    let updown = urls[1].change.includes("-")
+      ? `decrease of ${urls[1].change}`
+      : `increase of ${urls[1].change}`;
+    let message = `Gold price today ${date.getDate()}-${
       date.getMonth() + 1
-    }-${date.getFullYear()} adalah ${
-      urls[0].harga_terakhir
-    }, terjadi ${updown}, so were building this with node js`;
+    }-${date.getFullYear()} is ${
+      urls[0].last_price
+    }, occur ${updown}, so were building this with node js`;
     tele.sendNotif(message);
 
     // store data to db.json for our bot
     let data = JSON.stringify(urls);
-    fs.writeFileSync(path.join(__dirname, "../db.json"), data);
+    fs.writeFileSync(path.join(__dirname, "./../db.json"), data);
     console.log("data");
     console.log(urls);
     await browser.close();

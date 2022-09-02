@@ -30,8 +30,7 @@ tele.raven();
 // node cron
 cron.schedule("* * * * *", () => {
   console.log("this mean run every minutes");
+  // launch browser in instance
+  let browserInstance = browserObject.startBrowser();
+  scrapperController(browserInstance);
 });
-
-// launch browser in instance
-let browserInstance = browserObject.startBrowser();
-scrapperController(browserInstance);

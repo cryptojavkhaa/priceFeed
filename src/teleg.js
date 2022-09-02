@@ -12,13 +12,15 @@ const bot = new TelegramBot(token, { polling: true });
 
 const raven = () => {
   bot.onText(/\/cek/, (msg) => {
+    console.log("msg", msg.chat.id);
     let urls = [];
     const chatId = msg.chat.id;
-    fs.readFileSync(path.join(__dirname, "../db.json"), (err, data) => {
+    fs.readFile(path.join(__dirname, "./../db.json"), (err, data) => {
+      console.log("err", err);
       if (err) throw err;
       let a = JSON.parse(data);
       urls = a;
-      let message = `harga emas hari inin adalah ${urls[0].harga_terakhir}`;
+      let message = `today gold price is ${urls[0].last_price}`;
 
       // send message
       bot.sendMessage(chatId, message);
@@ -28,8 +30,9 @@ const raven = () => {
 
 const sendNotif = (msg) => {
   const target = `https://api.telegram.org/bot${token}/sendMessage?chat_id=${chatid}&text=${msg}`;
+  console.log(target);
   https.get(target, (res) => {
-    console.log("notif telegram sent");
+    console.log("notification telegram sent");
   });
 };
 
