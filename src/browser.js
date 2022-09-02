@@ -1,4 +1,4 @@
-// launching browser
+// for launching browser
 
 const puppeteer = require("puppeteer");
 
