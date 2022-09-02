@@ -28,8 +28,8 @@ app.listen(port, () => {
 tele.raven();
 
 // node cron
-cron.schedule("*/3 * * * *", () => {
-  console.log("this mean run every three minutes");
+cron.schedule("* * * * *", () => {
+  console.log("this mean run every minutes");
   // launch browser in instance
   let browserInstance = browserObject.startBrowser();
   scrapperController(browserInstance);
