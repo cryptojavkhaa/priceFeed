@@ -43,11 +43,11 @@ const scrapperObject = {
     // let updown = urls[1].change.includes("-")
     //   ? `decrease of ${urls[1].change}`
     //   : `increase of ${urls[1].change}`;
-    let message = `Gold price today ${date.getDate()}-${
+    let message = `Date is ${date.getDate()}-${
       date.getMonth() + 1
-    }-${date.getFullYear()} is ${
+    }-${date.getFullYear()} and notification test text and response data is ${
       urls[0].check_out
-    }, occur, so were building this with node js`;
+    }`;
     tele.sendNotif(message);
 
     // store data to db.json for our bot

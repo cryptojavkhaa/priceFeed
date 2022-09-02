@@ -20,7 +20,7 @@ const raven = () => {
       if (err) throw err;
       let a = JSON.parse(data);
       urls = a;
-      let message = `today gold price is ${urls[0].last_price}`;
+      let message = `This is DB json check out value : ${urls[0].check_out}`;
 
       // send message
       bot.sendMessage(chatId, message);
