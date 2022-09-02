@@ -12,9 +12,9 @@ const bot = new TelegramBot(token, { polling: true });
 
 const raven = () => {
   bot.onText(/\/cek/, (msg) => {
-    console.log("msg", msg.chat.id);
     let urls = [];
     const chatId = msg.chat.id;
+    console.log("chatId", chatId);
     fs.readFile(path.join(__dirname, "./../db.json"), (err, data) => {
       console.log("err", err);
       if (err) throw err;
