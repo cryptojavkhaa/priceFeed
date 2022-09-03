@@ -18,6 +18,7 @@ const scrape = async () => {
     maxConcurrency: 3,
     puppeteerOptions: {
       headless: true,
+      defaultViewport: false,
       args: ["--no-sandbox"],
     },
   });
@@ -148,16 +149,13 @@ const scrape = async () => {
     return result;
   });
 
-  try {
-    await cluster.execute(urls[0]);
-    await cluster.execute(urls[1]);
-    const result1 = await cluster.execute(urls[2]);
-    console.log(result1);
-    console.log(Calculation(result1));
-    console.log("succesfully finished");
-  } catch (err) {
-    console.log(`Error crawling :${err.message}`);
+  for (let url of urls) {
+    await cluster.execute(url);
   }
+
+  console.log(result);
+  console.log(Calculation(result));
+  console.log("succesfully finished");
 
   await cluster.idle();
   await cluster.close();
