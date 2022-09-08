@@ -2,10 +2,10 @@
 const pageScrapper = require("./pageScrapper");
 
 async function scrapeAll(browserInstance) {
-  let browser;
+  let cluster;
   try {
-    browser = await browserInstance;
-    await pageScrapper.scrapper(browser);
+    cluster = await browserInstance;
+    await pageScrapper.scrapper(cluster);
   } catch (err) {
     console.log("error on resolve the browser instance", err);
   }

@@ -16,8 +16,9 @@ const scrape = async () => {
     puppeteer,
     concurrency: Cluster.CONCURRENCY_CONTEXT,
     maxConcurrency: 3,
+    monitor: true,
     puppeteerOptions: {
-      headless: true,
+      headless: false,
       defaultViewport: false,
       args: ["--no-sandbox"],
     },
@@ -34,7 +35,7 @@ const scrape = async () => {
   await cluster.task(async ({ page, data: url }) => {
     await page.goto(url, {
       waitUntil: "networkidle2",
-      timeout: 60000,
+      timeout: 0,
     });
 
     if (url === urls[0]) {

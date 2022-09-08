@@ -1,21 +1,31 @@
 // for launching browser
+const { addExtra } = require("puppeteer-extra");
+const puppeteerVanilla = require("puppeteer");
+const StealthPlugin = require("puppeteer-extra-plugin-stealth");
+const { Cluster } = require("puppeteer-cluster");
 
-const puppeteer = require("puppeteer");
+const puppeteer = addExtra(puppeteerVanilla);
+puppeteer.use(StealthPlugin());
 
 async function startBrowser() {
-  let browser;
+  console.log("starting the browser");
+  const cluster = await cluster.launch({
+    puppeteer,
+    concurrency: Cluster.CONCURRENCY_CONTEXT,
+    maxConcurrency: 3,
+    monitor: true,
+    puppeteerOptions: {
+      headless: false,
+      defaultViewport: false,
+      args: ["--no-sandbox"],
+    },
+  });
 
-  try {
-    console.log("starting the browser");
-    browser = await puppeteer.launch({
-      headless: true,
-      args: ["--disable-setuid-sandbox"],
-      ignoreHTTPSErrors: true,
-    });
-  } catch (err) {
-    console.log("error launching browser => ", err);
-  }
-  return browser;
+  cluster.on("taskerror", (err, data) => {
+    console.log(`Error crawling ${data}:${err.message}`);
+  });
+
+  return cluster;
 }
 
 module.exports = { startBrowser };
