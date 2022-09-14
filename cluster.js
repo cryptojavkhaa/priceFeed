@@ -143,6 +143,8 @@ const scrape = async () => {
   let calc = Calculation(result);
 
   if (calc.trade_coinhub.includes("-") || calc.coinhub_trade.includes("-")) {
+    console.log("There is no positive chance.");
+  } else {
     // send notification to telegram bot
     let message = `trade_coinhub is ${calc.trade_coinhub}% %0Acoinhub_trade is ${calc.coinhub_trade}%`;
     tele.sendNotif(message);
@@ -150,8 +152,6 @@ const scrape = async () => {
     // store data to db.json for our bot
     let newData = JSON.stringify(calc);
     fs.writeFileSync(path.join(__dirname, "./db.json"), newData);
-  } else {
-    console.log("There is no positive chance.");
   }
   //console.log(calc);
   //console.log("succesfully finished");
