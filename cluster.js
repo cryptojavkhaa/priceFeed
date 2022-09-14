@@ -18,7 +18,7 @@ const scrape = async () => {
     puppeteer,
     concurrency: Cluster.CONCURRENCY_BROWSER,
     maxConcurrency: 2,
-    monitor: true,
+    monitor: false,
     puppeteerOptions: {
       headless: true,
       defaultViewport: false,
@@ -138,18 +138,19 @@ const scrape = async () => {
     await cluster.execute(url);
   }
 
-  console.log(result);
+  //console.log(result);
   let calc = Calculation(result);
   // send notification to telegram bot
   let message = `trade_coinhub is ${calc.trade_coinhub}% %0Acoinhub_trade is ${calc.coinhub_trade}%`;
   tele.sendNotif(message);
 
   // store data to db.json for our bot
-  let data = JSON.stringify(calc);
-  fs.writeFileSync(path.join(__dirname, "./db.json"), data);
+  let newData = JSON.stringify(calc);
 
-  console.log(calc);
-  console.log("succesfully finished");
+  fs.writeFileSync(path.join(__dirname, "./db.json"), newData);
+
+  //console.log(calc);
+  //console.log("succesfully finished");
 
   await cluster.idle();
   await cluster.close();
@@ -187,4 +188,4 @@ const Calculation = (response) => {
   return calc;
 };
 
-scrape();
+module.exports = scrape;

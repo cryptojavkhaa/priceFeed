@@ -14,13 +14,13 @@ const raven = () => {
   bot.onText(/\/cek/, (msg) => {
     let urls = [];
     const chatId = msg.chat.id;
-    console.log("chatId", chatId);
     fs.readFile(path.join(__dirname, "./../db.json"), (err, data) => {
-      console.log("err", err);
       if (err) throw err;
       let a = JSON.parse(data);
+
       urls = a;
-      let message = `This is DB json check out value : ${urls[0].check_out}`;
+      console.log("a", a);
+      let message = `trade_coinhub is ${urls.trade_coinhub}% %0Acoinhub_trade is ${urls.coinhub_trade}%`;
 
       // send message
       bot.sendMessage(chatId, message);
