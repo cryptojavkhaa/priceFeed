@@ -69,6 +69,7 @@ let browser;
   );
   const data = [];
   data.push(askPrices[1], bidPrices[1]);
+  console.log(data);
   console.log("successfully complete");
 })()
   .catch((err) => console.error(err))

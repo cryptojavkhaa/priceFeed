@@ -39,9 +39,48 @@ const scrape = async () => {
 
     if (url === urls[0]) {
       await page.waitForFunction(`
-      document.querySelector("#trade-depth .ask")
-       ?.textContent.trim()
-    `);
+      document.querySelector("#trade-depth > div.column.no-wrap.depth-lists.font-12 > div.column.no-wrap > div.q-list.q-list--dense.depth-list.ask.column.no-wrap.overflow-hidden.reverse.color-grey2.white-color-grey1 > div:nth-child(1) > div.q-item__section.column.q-item__section--main.justify-center > div > div.col-4.col-grow.color-red")
+         ?.textContent.trim()
+      `);
+      askPrices = await page.$$eval("#trade-depth .ask", (els) =>
+        els.map((el) => ({
+          exchange: "coinhub",
+          title: "ask_price",
+          price: el
+            .querySelector("div.q-item__section>div>div:nth-child(1)")
+            ?.textContent.trim(),
+          amount: el
+            .querySelector("div.q-item__section>div>div:nth-child(2)")
+            ?.textContent.trim(),
+          total: el
+            .querySelector("div.q-item__section>div>div:nth-child(3)")
+            ?.textContent.trim(),
+          patched: el.querySelector(".patched")?.textContent || "Not patched.",
+        }))
+      );
+      bidPrices = await page.$$eval("#trade-depth .bid", (els) =>
+        els.map((el) => ({
+          exchange: "coinhub",
+          title: "bid_price",
+          price: el
+            .querySelector(
+              "div:nth-child(1) >.q-item__section>div>div:nth-child(1)"
+            )
+            ?.textContent.trim(),
+          amount: el
+            .querySelector(
+              "div:nth-child(1) >.q-item__section>div>div:nth-child(2)"
+            )
+            ?.textContent.trim(),
+          total: el
+            .querySelector(
+              "div:nth-child(1) >.q-item__section>div>div:nth-child(3)"
+            )
+            ?.textContent.trim(),
+          patched: el.querySelector(".patched")?.textContent || "Not patched.",
+        }))
+      );
+      result.push(askPrices[1], bidPrices[1]);
 
       const askPrices = await page.$$eval("#trade-depth .ask", (els) =>
         els.map((el) => ({
@@ -130,10 +169,10 @@ const scrape = async () => {
               el.querySelector(".patched")?.textContent || "Not patched.",
           }))
       );
+      result.push(askPrices[askPrices.length - 1], bidPrices[0]);
     } else {
       console.log("url is undefined");
     }
-    result.push(askPrices[askPrices.length - 1], bidPrices[0]);
     return result;
   });
 
