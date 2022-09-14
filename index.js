@@ -2,11 +2,12 @@ const express = require("express");
 const app = express();
 const path = require("path");
 const router = express.Router();
+const cluster = require("./cluster");
 
 // scrape
 const browserObject = require("./src/browser");
 const scrapperController = require("./src/pageController");
-
+let data = [{ nello: "hello" }];
 // cron
 const cron = require("node-cron");
 
@@ -15,6 +16,7 @@ const tele = require("./src/teleg");
 
 // index page
 const port = process.env.PORT || 3000;
+
 router.get("/", (req, res) => {
   res.sendFile(path.join(__dirname + "/index.html"));
 });
