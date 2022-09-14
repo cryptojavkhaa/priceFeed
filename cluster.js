@@ -2,6 +2,9 @@ const { addExtra } = require("puppeteer-extra");
 const puppeteerVanilla = require("puppeteer");
 const StealthPlugin = require("puppeteer-extra-plugin-stealth");
 const { Cluster } = require("puppeteer-cluster");
+const fs = require("fs");
+const path = require("path");
+const tele = require("./src/teleg");
 
 const puppeteer = addExtra(puppeteerVanilla);
 puppeteer.use(StealthPlugin());
@@ -81,51 +84,6 @@ const scrape = async () => {
         }))
       );
       result.push(askPrices[1], bidPrices[1]);
-
-      const askPrices = await page.$$eval("#trade-depth .ask", (els) =>
-        els.map((el) => ({
-          exchange: "coinhub",
-          title: "ask_price",
-          price: el
-            .querySelector(
-              "div:nth-child(1) >.q-item__section>div>div:nth-child(1)"
-            )
-            ?.textContent.trim(),
-          amount: el
-            .querySelector(
-              "div:nth-child(1) >.q-item__section>div>div:nth-child(2)"
-            )
-            ?.textContent.trim(),
-          total: el
-            .querySelector(
-              "div:nth-child(1) >.q-item__section>div>div:nth-child(3)"
-            )
-            ?.textContent.trim(),
-          patched: el.querySelector(".patched")?.textContent || "Not patched.",
-        }))
-      );
-      const bidPrices = await page.$$eval("#trade-depth .bid", (els) =>
-        els.map((el) => ({
-          exchange: "coinhub",
-          title: "bid_price",
-          price: el
-            .querySelector(
-              "div:nth-child(1) >.q-item__section>div>div:nth-child(1)"
-            )
-            ?.textContent.trim(),
-          amount: el
-            .querySelector(
-              "div:nth-child(1) >.q-item__section>div>div:nth-child(2)"
-            )
-            ?.textContent.trim(),
-          total: el
-            .querySelector(
-              "div:nth-child(1) >.q-item__section>div>div:nth-child(3)"
-            )
-            ?.textContent.trim(),
-          patched: el.querySelector(".patched")?.textContent || "Not patched.",
-        }))
-      );
     } else if (url === urls[1]) {
       await page.waitForFunction(`
         document.querySelector(".Balance_sell__YYumH .Balance_price__H0Z3x")
@@ -181,7 +139,16 @@ const scrape = async () => {
   }
 
   console.log(result);
-  //console.log(Calculation(result));
+  let calc = Calculation(result);
+  // send notification to telegram bot
+  let message = `trade_coinhub is ${calc.trade_coinhub}% %0Acoinhub_trade is ${calc.coinhub_trade}%`;
+  tele.sendNotif(message);
+
+  // store data to db.json for our bot
+  let data = JSON.stringify(calc);
+  fs.writeFileSync(path.join(__dirname, "./db.json"), data);
+
+  console.log(calc);
   console.log("succesfully finished");
 
   await cluster.idle();
@@ -203,17 +170,17 @@ const Calculation = (response) => {
   });
 
   res.forEach((element) => {
-    if (element.title === "bid_price" && element.exchange !== "idax") {
-      calc["idax_" + element.exchange] =
-        ((1 - res[0].price / element.price) * 100).toFixed(2) + "%";
-    }
-    if (element.title === "bid_price" && element.exchange !== "complex") {
-      calc["complex_" + element.exchange] =
-        ((1 - res[2].price / element.price) * 100).toFixed(2) + "%";
-    }
     if (element.title === "bid_price" && element.exchange !== "trade") {
-      calc["trade_" + element.exchange] =
-        ((1 - res[4].price / element.price) * 100).toFixed(2) + "%";
+      calc["trade_" + element.exchange] = (
+        (1 - res[0].price / element.price) *
+        100
+      ).toFixed(2);
+    }
+    if (element.title === "bid_price" && element.exchange !== "coinhub") {
+      calc["coinhub_" + element.exchange] = (
+        (1 - res[2].price / element.price) *
+        100
+      ).toFixed(2);
     }
   });
 
