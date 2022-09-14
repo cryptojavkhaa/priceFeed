@@ -141,18 +141,17 @@ const scrape = async () => {
   //console.log(result);
 
   let calc = Calculation(result);
+  // if (calc.trade_coinhub.includes("-") || calc.coinhub_trade.includes("-")) {
+  //   console.log("There is no positive chance.");
+  // } else {
+  // send notification to telegram bot
+  let message = `date ${calc.date}%0Atrade_coinhub ${calc.trade_coinhub}% %0Acoinhub_trade ${calc.coinhub_trade}%`;
+  tele.sendNotif(message);
 
-  if (calc.trade_coinhub.includes("-") || calc.coinhub_trade.includes("-")) {
-    console.log("There is no positive chance.");
-  } else {
-    // send notification to telegram bot
-    let message = `trade_coinhub is ${calc.trade_coinhub}% %0Acoinhub_trade is ${calc.coinhub_trade}%`;
-    tele.sendNotif(message);
-
-    // store data to db.json for our bot
-    let newData = JSON.stringify(calc);
-    fs.writeFileSync(path.join(__dirname, "./db.json"), newData);
-  }
+  // store data to db.json for our bot
+  let newData = JSON.stringify(calc);
+  fs.writeFileSync(path.join(__dirname, "./db.json"), newData);
+  //}
   //console.log(calc);
   //console.log("succesfully finished");
 
@@ -173,19 +172,21 @@ const Calculation = (response) => {
       patched: el.patched,
     });
   });
-
+  let date = new Date();
   res.forEach((element) => {
     if (element.title === "bid_price" && element.exchange !== "trade") {
       calc["trade_" + element.exchange] = (
         (1 - res[0].price / element.price) *
         100
       ).toFixed(2);
+      calc["date"] = date;
     }
     if (element.title === "bid_price" && element.exchange !== "coinhub") {
       calc["coinhub_" + element.exchange] = (
         (1 - res[2].price / element.price) *
         100
       ).toFixed(2);
+      calc["date"] = date;
     }
   });
 
