@@ -30,7 +30,7 @@ const raven = () => {
 
 const sendNotif = (msg) => {
   const target = `https://api.telegram.org/bot${token}/sendMessage?chat_id=${chatid}&text=${msg}`;
-  console.log(target);
+  //console.log(target);
   https.get(target, (res) => {
     console.log("notification telegram sent");
   });

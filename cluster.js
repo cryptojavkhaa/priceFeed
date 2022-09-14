@@ -146,8 +146,15 @@ const scrape = async () => {
 
   // store data to db.json for our bot
   let newData = JSON.stringify(calc);
+  let json = [];
 
-  fs.writeFileSync(path.join(__dirname, "./db.json"), newData);
+  fs.readFile(path.join(__dirname, "./../db.json"), (err, data) => {
+    if (err) throw err;
+    json = JSON.parse(data);
+    json.push(newData);
+  });
+
+  fs.writeFileSync(path.join(__dirname, "./db.json"), json);
 
   //console.log(calc);
   //console.log("succesfully finished");
