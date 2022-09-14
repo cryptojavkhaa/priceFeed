@@ -139,9 +139,9 @@ const scrape = async () => {
     );
     const res2 = await cluster.execute("https://trade.mn/exchange/IHC/MNT/");
     let calc = Calculation(res2);
-    // if (calc.trade_coinhub.includes("-") || calc.coinhub_trade.includes("-")) {
-    //   console.log("There is no positive chance.");
-    // } else {
+    if (calc.trade_coinhub.includes("-") || calc.coinhub_trade.includes("-")) {
+      console.log("There is no positive chance.");
+    } else {
     //send notification to telegram bot
     let message = `${calc.date}%0Atrade_coinhub ${calc.trade_coinhub}% %0Acoinhub_trade ${calc.coinhub_trade}%`;
     tele.sendNotif(message);
@@ -149,7 +149,7 @@ const scrape = async () => {
     // store data to db.json for our bot
     let newData = JSON.stringify(calc);
     fs.writeFileSync(path.join(__dirname, "./db.json"), newData);
-    //  }
+    }
   } catch (err) {
     console.log(`Error crawling ${data}:${err.message}`);
   }
