@@ -139,24 +139,20 @@ const scrape = async () => {
   }
 
   //console.log(result);
+
   let calc = Calculation(result);
-  // send notification to telegram bot
-  let message = `trade_coinhub is ${calc.trade_coinhub}% %0Acoinhub_trade is ${calc.coinhub_trade}%`;
-  tele.sendNotif(message);
 
-  // store data to db.json for our bot
-  let newData = JSON.stringify(calc);
-  let fullData = [];
+  if (calc.trade_coinhub.includes("-") || calc.coinhub_trade.includes("-")) {
+    // send notification to telegram bot
+    let message = `trade_coinhub is ${calc.trade_coinhub}% %0Acoinhub_trade is ${calc.coinhub_trade}%`;
+    tele.sendNotif(message);
 
-  fs.readFile(path.join(__dirname, "./../db.json"), (err, data) => {
-    if (err) throw err;
-    json = JSON.parse(data);
-    fullData.push(json);
-    fullData.push(newData);
-  });
-
-  fs.writeFileSync(path.join(__dirname, "./db.json"), fullData);
-
+    // store data to db.json for our bot
+    let newData = JSON.stringify(calc);
+    fs.writeFileSync(path.join(__dirname, "./db.json"), newData);
+  } else {
+    console.log("There is no positive chance.");
+  }
   //console.log(calc);
   //console.log("succesfully finished");
 
