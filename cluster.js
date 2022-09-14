@@ -18,10 +18,9 @@ const scrape = async () => {
     puppeteer,
     concurrency: Cluster.CONCURRENCY_BROWSER,
     maxConcurrency: 2,
-    monitor: false,
+    monitor: true,
     puppeteerOptions: {
       headless: true,
-      defaultViewport: false,
       args: ["--no-sandbox"],
     },
   });
@@ -134,24 +133,32 @@ const scrape = async () => {
     return result;
   });
 
-  for (let url of urls) {
-    await cluster.execute(url);
+  try {
+    const res1 = await cluster.execute(
+      "https://www.coinhub.mn/trade?symbol=IHC_MNT"
+    );
+    const res2 = await cluster.execute("https://trade.mn/exchange/IHC/MNT/");
+    let calc = Calculation(res2);
+    // if (calc.trade_coinhub.includes("-") || calc.coinhub_trade.includes("-")) {
+    //   console.log("There is no positive chance.");
+    // } else {
+    //send notification to telegram bot
+    let message = `${calc.date}%0Atrade_coinhub ${calc.trade_coinhub}% %0Acoinhub_trade ${calc.coinhub_trade}%`;
+    tele.sendNotif(message);
+
+    // store data to db.json for our bot
+    let newData = JSON.stringify(calc);
+    fs.writeFileSync(path.join(__dirname, "./db.json"), newData);
+    //  }
+  } catch (err) {
+    console.log(`Error crawling ${data}:${err.message}`);
   }
+  // for (let url of urls) {
+  //   await cluster.execute(url);
+  // }
 
   //console.log(result);
 
-  let calc = Calculation(result);
-  if (calc.trade_coinhub.includes("-") || calc.coinhub_trade.includes("-")) {
-    console.log("There is no positive chance.");
-  } else {
-  //send notification to telegram bot
-  let message = `${calc.date}%0Atrade_coinhub ${calc.trade_coinhub}% %0Acoinhub_trade ${calc.coinhub_trade}%`;
-  tele.sendNotif(message);
-
-  // store data to db.json for our bot
-  let newData = JSON.stringify(calc);
-  fs.writeFileSync(path.join(__dirname, "./db.json"), newData);
-  }
   //console.log(calc);
   //console.log("succesfully finished");
 
