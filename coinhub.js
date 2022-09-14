@@ -22,9 +22,9 @@ let browser;
      ?.textContent.trim()
   `);
 
-  document.querySelector(
-    "#trade-depth > div.column.no-wrap.depth-lists.font-12 > div.column.no-wrap > div.q-list.q-list--dense.depth-list.ask.column.no-wrap.overflow-hidden.reverse.color-grey2.white-color-grey1 > div:nth-child(2) > div.q-item__section.column.q-item__section--main.justify-center > div > div.col-4.col-grow.color-red"
-  );
+  // document.querySelector(
+  //   "#trade-depth > div.column.no-wrap.depth-lists.font-12 > div.column.no-wrap > div.q-list.q-list--dense.depth-list.ask.column.no-wrap.overflow-hidden.reverse.color-grey2.white-color-grey1 > div:nth-child(2) > div.q-item__section.column.q-item__section--main.justify-center > div > div.col-4.col-grow.color-red"
+  // );
 
   console.log("askPrice is loading...");
   const askPrices = await page.$$eval("#trade-depth .ask", (els) =>
