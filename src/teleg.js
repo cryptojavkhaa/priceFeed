@@ -20,7 +20,9 @@ const raven = () => {
 
       urls = a;
       console.log("a", a);
-      let message = `trade_coinhub is ${urls.trade_coinhub}% %0Acoinhub_trade is ${urls.coinhub_trade}%`;
+      let message = `${JSON.stringify(urls.date)}\ntrade_coinhub ${
+        urls.trade_coinhub
+      }% \ncoinhub_trade is ${urls.coinhub_trade}%`;
 
       // send message
       bot.sendMessage(chatId, message);

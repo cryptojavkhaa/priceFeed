@@ -141,17 +141,17 @@ const scrape = async () => {
   //console.log(result);
 
   let calc = Calculation(result);
-  // if (calc.trade_coinhub.includes("-") || calc.coinhub_trade.includes("-")) {
-  //   console.log("There is no positive chance.");
-  // } else {
-  // send notification to telegram bot
-  let message = `date ${calc.date}%0Atrade_coinhub ${calc.trade_coinhub}% %0Acoinhub_trade ${calc.coinhub_trade}%`;
+  if (calc.trade_coinhub.includes("-") || calc.coinhub_trade.includes("-")) {
+    console.log("There is no positive chance.");
+  } else {
+  //send notification to telegram bot
+  let message = `${calc.date}%0Atrade_coinhub ${calc.trade_coinhub}% %0Acoinhub_trade ${calc.coinhub_trade}%`;
   tele.sendNotif(message);
 
   // store data to db.json for our bot
   let newData = JSON.stringify(calc);
   fs.writeFileSync(path.join(__dirname, "./db.json"), newData);
-  //}
+  }
   //console.log(calc);
   //console.log("succesfully finished");
 
