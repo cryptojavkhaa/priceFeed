@@ -194,11 +194,11 @@ const Calculation = (response) => {
       calc["profit"] =
         res[0].amount >= element.amount
           ? (
-              ((1 - res[0].price / element.price) * 100 - fee) *
+              (((1 - res[0].price / element.price) * 100 - fee) / 100) *
               element.amount
             ).toFixed(2)
           : (
-              ((1 - res[0].price / element.price) * 100 - fee) *
+              (((1 - res[0].price / element.price) * 100 - fee) / 100) *
               res[0].amount
             ).toFixed(2);
     }
@@ -212,12 +212,14 @@ const Calculation = (response) => {
         res[2].amount >= element.amount ? element.amount : res[2].amount;
       calc["profit"] =
         res[2].amount >= element.amount
-          ? ((1 - res[0].price / element.price - fee) * element.amount).toFixed(
-              2
-            )
-          : ((1 - res[0].price / element.price - fee) * res[0].amount).toFixed(
-              2
-            );
+          ? (
+              ((1 - res[0].price / element.price - fee) / 100) *
+              element.amount
+            ).toFixed(2)
+          : (
+              ((1 - res[0].price / element.price - fee) / 100) *
+              res[0].amount
+            ).toFixed(2);
     }
   });
 
