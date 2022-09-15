@@ -158,7 +158,7 @@ const scrape = async () => {
     console.log(`Error crawling ${data}:${err.message}`);
   }
 
-  // console.log(result);
+  console.log(result);
 
   //console.log(calc);
   //console.log("succesfully finished");
