@@ -140,7 +140,7 @@ const scrape = async () => {
     const res2 = await cluster.execute("https://trade.mn/exchange/IHC/MNT/");
     let calc = Calculation(res2);
     let fee = 2;
-    if (calc.trade_coinhub - fee > 0 || calc.coinhub_trade - fee <= 0) {
+    if (calc.trade_coinhub - fee > 0 || calc.coinhub_trade - fee > 0) {
       //send notification to telegram bot
       let message = `${calc.date}
       %0Atrade_coinhub ${calc.trade_coinhub}% 
@@ -212,14 +212,12 @@ const Calculation = (response) => {
         res[2].amount >= element.amount ? element.amount : res[2].amount;
       calc["profit"] =
         res[2].amount >= element.amount
-          ? (
-              ((1 - res[0].price / element.price) * 100 - fee) *
-              element.amount
-            ).toFixed(2)
-          : (
-              ((1 - res[0].price / element.price) * 100 - fee) *
-              res[0].amount
-            ).toFixed(2);
+          ? ((1 - res[0].price / element.price - fee) * element.amount).toFixed(
+              2
+            )
+          : ((1 - res[0].price / element.price - fee) * res[0].amount).toFixed(
+              2
+            );
     }
   });
 
