@@ -140,28 +140,25 @@ const scrape = async () => {
     const res2 = await cluster.execute("https://trade.mn/exchange/IHC/MNT/");
     let calc = Calculation(res2);
     let fee = 2;
-    // if (calc.trade_coinhub - fee > 0 || calc.coinhub_trade - fee <= 0) {
-    //send notification to telegram bot
-    let message = `${calc.date}
+    if (calc.trade_coinhub - fee > 0 || calc.coinhub_trade - fee <= 0) {
+      //send notification to telegram bot
+      let message = `${calc.date}
       %0Atrade_coinhub ${calc.trade_coinhub}% 
       %0Acoinhub_trade ${calc.coinhub_trade}%
       %0Apossible_amount ${calc.possible_amount}
       %0Aprofit ${calc.profit}MNT`;
-    tele.sendNotif(message);
-    // } else {
-    //   console.log("There is no positive chance.");
-    // }
+      tele.sendNotif(message);
+    } else {
+      console.log("There is no positive chance.");
+    }
     // store data to db.json for our bot
     let newData = JSON.stringify(calc);
     fs.writeFileSync(path.join(__dirname, "./db.json"), newData);
   } catch (err) {
     console.log(`Error crawling ${data}:${err.message}`);
   }
-  // for (let url of urls) {
-  //   await cluster.execute(url);
-  // }
 
-  console.log(result);
+  // console.log(result);
 
   //console.log(calc);
   //console.log("succesfully finished");
