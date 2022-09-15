@@ -139,17 +139,21 @@ const scrape = async () => {
     );
     const res2 = await cluster.execute("https://trade.mn/exchange/IHC/MNT/");
     let calc = Calculation(res2);
-    if (calc.trade_coinhub.includes("-") || calc.coinhub_trade.includes("-")) {
-      console.log("There is no positive chance.");
-    } else {
+    let fee = 2;
+    // if (calc.trade_coinhub - fee > 0 || calc.coinhub_trade - fee <= 0) {
     //send notification to telegram bot
-    let message = `${calc.date}%0Atrade_coinhub ${calc.trade_coinhub}% %0Acoinhub_trade ${calc.coinhub_trade}%`;
+    let message = `${calc.date}
+      %0Atrade_coinhub ${calc.trade_coinhub}% 
+      %0Acoinhub_trade ${calc.coinhub_trade}%
+      %0Apossible_amount ${calc.possible_amount}
+      %0Aprofit ${calc.profit}MNT`;
     tele.sendNotif(message);
-
+    // } else {
+    //   console.log("There is no positive chance.");
+    // }
     // store data to db.json for our bot
     let newData = JSON.stringify(calc);
     fs.writeFileSync(path.join(__dirname, "./db.json"), newData);
-    }
   } catch (err) {
     console.log(`Error crawling ${data}:${err.message}`);
   }
@@ -157,7 +161,7 @@ const scrape = async () => {
   //   await cluster.execute(url);
   // }
 
-  //console.log(result);
+  console.log(result);
 
   //console.log(calc);
   //console.log("succesfully finished");
@@ -169,6 +173,7 @@ const scrape = async () => {
 const Calculation = (response) => {
   let res = [];
   let calc = {};
+  let fee = 2;
   response.forEach((el) => {
     res.push({
       exchange: el.exchange,
@@ -181,19 +186,43 @@ const Calculation = (response) => {
   });
   let date = new Date();
   res.forEach((element) => {
-    if (element.title === "bid_price" && element.exchange !== "trade") {
-      calc["trade_" + element.exchange] = (
+    if (element.title === "bid_price" && element.exchange !== "coinhub") {
+      calc["coinhub_" + element.exchange] = (
         (1 - res[0].price / element.price) *
         100
       ).toFixed(2);
       calc["date"] = date;
+      calc["possible_amount"] =
+        res[0].amount >= element.amount ? element.amount : res[0].amount;
+      calc["profit"] =
+        res[0].amount >= element.amount
+          ? (
+              ((1 - res[0].price / element.price) * 100 - fee) *
+              element.amount
+            ).toFixed(2)
+          : (
+              ((1 - res[0].price / element.price) * 100 - fee) *
+              res[0].amount
+            ).toFixed(2);
     }
-    if (element.title === "bid_price" && element.exchange !== "coinhub") {
-      calc["coinhub_" + element.exchange] = (
+    if (element.title === "bid_price" && element.exchange !== "trade") {
+      calc["trade_" + element.exchange] = (
         (1 - res[2].price / element.price) *
         100
       ).toFixed(2);
       calc["date"] = date;
+      calc["possible_amount"] =
+        res[2].amount >= element.amount ? element.amount : res[2].amount;
+      calc["profit"] =
+        res[2].amount >= element.amount
+          ? (
+              ((1 - res[0].price / element.price) * 100 - fee) *
+              element.amount
+            ).toFixed(2)
+          : (
+              ((1 - res[0].price / element.price) * 100 - fee) *
+              res[0].amount
+            ).toFixed(2);
     }
   });
 
