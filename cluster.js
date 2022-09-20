@@ -150,7 +150,7 @@ const scrape = async () => {
       %0Apossible_amount ${calc.possible_amount}
       %0Aprofit ${calc.profit}MNT`;
       tele.sendNotif(message);
-    } else {
+      // record json data to db.json
       fs.readFile(path.join(__dirname, "./db.json"), (err, data) => {
         if (err) throw err;
         let arr = JSON.parse(data);
@@ -158,6 +158,7 @@ const scrape = async () => {
         let newData = JSON.stringify(arr);
         fs.writeFileSync(path.join(__dirname, "./db.json"), newData);
       });
+    } else {
       console.log("There is no positive chance.");
     }
     // store data to db.json for our bot
