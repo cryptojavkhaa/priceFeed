@@ -141,14 +141,28 @@ const scrape = async () => {
     let calc = Calculation(res2);
     let fee = 2;
     let date = new Date();
-
     if (calc.trade_coinhub - fee > 0 || calc.coinhub_trade - fee > 0) {
+    } else if (calc.trade_coinhub - fee <= calc.coinhub_trade - fee) {
       //send notification to telegram bot
       let message = `${calc.date}
-      %0Atrade_coinhub ${calc.trade_coinhub}% 
       %0Acoinhub_trade ${calc.coinhub_trade}%
-      %0Apossible_amount ${calc.possible_amount}
+      %0Apossible_amount ${calc.possible_amount}MNT
       %0Aprofit ${calc.profit}MNT`;
+      tele.sendNotif(message);
+      // record json data to db.json
+      fs.readFile(path.join(__dirname, "./db.json"), (err, data) => {
+        if (err) throw err;
+        let arr = JSON.parse(data);
+        arr.push(calc);
+        let newData = JSON.stringify(arr);
+        fs.writeFileSync(path.join(__dirname, "./db.json"), newData);
+      });
+    } else if (calc.trade_coinhub - fee > calc.coinhub_trade - fee) {
+      //send notification to telegram bot
+      let message = `${calc.date}
+            %0Atrade_coinhub ${calc.trade_coinhub}% 
+            %0Apossible_amount ${calc.possible_amount}MNT
+            %0Aprofit ${calc.profit}MNT`;
       tele.sendNotif(message);
       // record json data to db.json
       fs.readFile(path.join(__dirname, "./db.json"), (err, data) => {
@@ -166,7 +180,7 @@ const scrape = async () => {
     console.log(`Error crawling ${data}:${err.message}`);
   }
 
-  console.log(result);
+  //console.log(result);
 
   //console.log(calc);
   //console.log("succesfully finished");
@@ -201,7 +215,7 @@ const Calculation = (response) => {
         res[0].amount >= element.amount ? element.amount : res[0].amount
       ).toFixed(2);
       calc["profit"] =
-        (1 - res[0].price / element.price) * 100 >= 0
+        res[0].amount >= element.amount
           ? (
               (((1 - res[0].price / element.price) * 100 - fee) / 100) *
               element.amount
@@ -221,7 +235,7 @@ const Calculation = (response) => {
         res[2].amount >= element.amount ? element.amount : res[2].amount
       ).toFixed(2);
       calc["profit"] =
-        1 - res[2].price / element.price >= 0
+        res[2].amount >= element.amount
           ? (
               ((1 - res[0].price / element.price - fee) / 100) *
               element.amount
