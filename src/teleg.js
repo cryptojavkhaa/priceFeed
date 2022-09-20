@@ -17,14 +17,16 @@ const raven = () => {
     fs.readFile(path.join(__dirname, "./../db.json"), (err, data) => {
       if (err) throw err;
       let a = JSON.parse(data);
-
       urls = a;
-      let message = `${new Date(urls.date)}\ntrade_coinhub ${
-        urls.trade_coinhub
-      }% \ncoinhub_trade is ${urls.coinhub_trade}%`;
-
-      // send message
-      bot.sendMessage(chatId, message);
+      urls.forEach((el) => {
+        let message = `${new Date(el.date)}
+                        \ntrade_coinhub : ${el.trade_coinhub}% 
+                        \ncoinhub_trade : ${el.coinhub_trade}%
+                        \npossible_amount : ${el.possible_amount}MNT
+                        \nprofit : ${el.profit}MNT`;
+        // send message
+        bot.sendMessage(chatId, message);
+      });
     });
   });
 };

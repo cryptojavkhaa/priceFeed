@@ -140,6 +140,8 @@ const scrape = async () => {
     const res2 = await cluster.execute("https://trade.mn/exchange/IHC/MNT/");
     let calc = Calculation(res2);
     let fee = 2;
+    let date = new Date();
+
     if (calc.trade_coinhub - fee > 0 || calc.coinhub_trade - fee > 0) {
       //send notification to telegram bot
       let message = `${calc.date}
@@ -149,11 +151,16 @@ const scrape = async () => {
       %0Aprofit ${calc.profit}MNT`;
       tele.sendNotif(message);
     } else {
+      fs.readFile(path.join(__dirname, "./db.json"), (err, data) => {
+        if (err) throw err;
+        let arr = JSON.parse(data);
+        arr.push(calc);
+        let newData = JSON.stringify(arr);
+        fs.writeFileSync(path.join(__dirname, "./db.json"), newData);
+      });
       console.log("There is no positive chance.");
     }
     // store data to db.json for our bot
-    let newData = JSON.stringify(calc);
-    fs.writeFileSync(path.join(__dirname, "./db.json"), newData);
   } catch (err) {
     console.log(`Error crawling ${data}:${err.message}`);
   }
@@ -189,8 +196,9 @@ const Calculation = (response) => {
         100
       ).toFixed(2);
       calc["date"] = date;
-      calc["possible_amount"] =
-        res[0].amount >= element.amount ? element.amount : res[0].amount;
+      calc["possible_amount"] = (
+        res[0].amount >= element.amount ? element.amount : res[0].amount
+      ).toFixed(2);
       calc["profit"] =
         res[0].amount >= element.amount
           ? (
@@ -208,8 +216,9 @@ const Calculation = (response) => {
         100
       ).toFixed(2);
       calc["date"] = date;
-      calc["possible_amount"] =
-        res[2].amount >= element.amount ? element.amount : res[2].amount;
+      calc["possible_amount"] = (
+        res[2].amount >= element.amount ? element.amount : res[2].amount
+      ).toFixed(2);
       calc["profit"] =
         res[2].amount >= element.amount
           ? (
